@@ -7,8 +7,8 @@ import { ConferenceCard } from '../conference-card/conference-card';
   templateUrl: './conferance-list.html', styleUrl: './conferance-list.css',
 })
 export class ConferanceList {
-  private readonly service = inject(Conferance);
-  readonly conferances = signal(this.service.getAll());
+  readonly service = inject(Conferance);
+  readonly conferances = this.service.conferences;
   readonly selected = signal<Conference | null>(null);
   readonly total = computed(() => this.conferances().length);
 }
