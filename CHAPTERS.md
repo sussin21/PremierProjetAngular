@@ -13,3 +13,9 @@ Le dÃ©pÃ´t conserve le commit initial et importe ensuite le projet fourni. Chaqu
 - État partagé exposé en lecture seule, compteur computed et mutations immuables.
 - Création, modification, suppression et vérification du nombre de places.
 - Les périmètres root/route/composant sont des alternatives ; le service partagé utilise root.
+
+## Chapitre 4 : routage et lazy loading
+- Routes autonomes chargées par loadComponent et section chargée par loadChildren.
+- Layout parent et outlet enfant, redirections historiques /list et /details/:id, wildcard.
+- Paramètre id via input, recherche via query parameter et withComponentInputBinding.
+- Resolver et RouterLinkActive ; test de navigation avec RouterTestingHarness.

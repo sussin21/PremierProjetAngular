@@ -1,7 +1,8 @@
 <h1>Conférences ({{ total() }})</h1>
 @if (selected(); as conf) { <p role="status">Sélection : {{ conf.name }}</p> }
+<label>Rechercher <input type="search" [ngModel]="search()" (ngModelChange)="setSearch($event)" /></label>
 <div class="cards-container">
-  @for (conf of conferances(); track conf.id) {
+  @for (conf of filtered(); track conf.id) {
     <app-conference-card [conference]="conf" (selected)="selected.set($event)" />
   } @empty { <p>Aucune conférence.</p> }
 </div>
