@@ -3,6 +3,7 @@
     <h1>{{ conf.name }}</h1><p>{{ conf.description }}</p>
     <p>{{ conf.date | date:'longDate' }} · {{ conf.place }}</p>
     <p>{{ conf.price | currency:'TND':'code' }} · {{ conf.nbPlaces }} places</p>
+  <a [routerLink]="['/conferences/edit', conf.id]">Modifier</a>
   </article>
 } @else { <h1>Conférence introuvable</h1> }
 <a routerLink="/list">Retour aux conférences</a>

@@ -1,0 +1,28 @@
+<h1>{{ id() ? 'Modifier la conférence' : 'Ajouter une conférence' }}</h1>
+@if (notFound()) {
+  <p role="alert">Conférence introuvable.</p>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>Nom <input formControlName="name" /></label>
+    <small>{{ nameLength() }} caractères</small>
+    @if (form.controls.name.touched && form.controls.name.invalid) { <p class="error">Le nom doit contenir au moins 3 caractères et ne peut pas être vide.</p> }
+    <label>Description <textarea formControlName="description"></textarea></label>
+    @if (form.controls.description.touched && form.controls.description.invalid) { <p class="error">Description obligatoire, au moins 10 caractères.</p> }
+    <fieldset formGroupName="logistics">
+      <legend>Organisation</legend>
+      <label>Date <input type="date" formControlName="date" /></label>
+      @if (form.controls.logistics.controls.date.touched && form.controls.logistics.controls.date.invalid) { <p class="error">La date est obligatoire.</p> }
+      <label>Lieu <input formControlName="place" /></label>
+      @if (form.controls.logistics.controls.place.touched && form.controls.logistics.controls.place.invalid) { <p class="error">Le lieu est obligatoire.</p> }
+    </fieldset>
+    <label>Prix (TND) <input type="number" min="0" step="0.01" formControlName="price" /></label>
+    @if (form.controls.price.touched && form.controls.price.invalid) { <p class="error">Le prix doit être positif ou nul.</p> }
+    <label>Places <input type="number" min="0" step="1" formControlName="nbPlaces" /></label>
+    @if (form.controls.nbPlaces.touched && form.controls.nbPlaces.invalid) { <p class="error">Entrez un nombre entier positif ou nul.</p> }
+    <div class="actions">
+      <button type="submit" [disabled]="!isValid()">Enregistrer</button>
+      <button type="button" (click)="form.reset()">Réinitialiser</button>
+    </div>
+  </form>
+}
+<a routerLink="/conferences/list">Retour aux conférences</a>

@@ -1,5 +1,6 @@
 <h1>Conférences ({{ total() }})</h1>
 @if (selected(); as conf) { <p role="status">Sélection : {{ conf.name }}</p> }
+<p><a routerLink="/conferences/new">Ajouter une conf�rence</a></p>
 <label>Rechercher <input type="search" [ngModel]="search()" (ngModelChange)="setSearch($event)" /></label>
 <div class="cards-container">
   @for (conf of filtered(); track conf.id) {

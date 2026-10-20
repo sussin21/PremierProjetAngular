@@ -19,3 +19,9 @@ Le dÃ©pÃ´t conserve le commit initial et importe ensuite le projet fourni. Chaqu
 - Layout parent et outlet enfant, redirections historiques /list et /details/:id, wildcard.
 - Paramètre id via input, recherche via query parameter et withComponentInputBinding.
 - Resolver et RouterLinkActive ; test de navigation avec RouterTestingHarness.
+
+## Formulaires réactifs (support fourni aussi nommé cours 3)
+- Création et modification, FormBuilder nonNullable, FormControl et FormGroup imbriqué.
+- Required, minLength, min, pattern et validateur personnalisé nonBlank.
+- Erreurs après interaction, soumission invalide bloquée, reset/getRawValue.
+- valueChanges/statusChanges convertis avec toSignal et valeurs dérivées avec computed.

@@ -1,11 +1,11 @@
 import { Component, computed, inject, signal, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Conferance } from '../services/conferance';
 import { Conference } from '../models/conference';
 import { ConferenceCard } from '../conference-card/conference-card';
 @Component({
-  selector: 'app-conferance-list', imports: [ConferenceCard, FormsModule],
+  selector: 'app-conferance-list', imports: [ConferenceCard, FormsModule, RouterLink],
   templateUrl: './conferance-list.html', styleUrl: './conferance-list.css',
 })
 export class ConferanceList {
