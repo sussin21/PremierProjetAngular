@@ -1,23 +1,20 @@
-<h1>Conférences ({{ total() }})</h1>
-<p><a routerLink="/conferences/new">Ajouter une conférence</a></p>
-<label>Rechercher <input type="search" [ngModel]="search()" (ngModelChange)="setSearch($event)" /></label>
-@if (selected(); as conf) { <p role="status">Sélection : {{ conf.name }}</p> }
-@if (service.loading()) { <p role="status">Chargement…</p> }
+<h1>Conferences</h1>
+<div class="list-tools">
+  <a routerLink="/conferences/new">Ajouter une conférence</a>
+  <label>Rechercher <input type="search" [ngModel]="search()" (ngModelChange)="setSearch($event)" /></label>
+</div>
+@if (selected(); as conf) { <p class="list-message" role="status">Sélection : {{ conf.name }}</p> }
+@if (service.loading()) { <p class="list-message" role="status">Chargement…</p> }
 @if (service.error(); as error) {
-  <p role="alert">{{ error }}</p>
-  <button type="button" (click)="service.load()" [disabled]="service.loading() || service.saving()">Réessayer</button>
+  <div class="list-message"><p role="alert">{{ error }}</p>
+    <button type="button" (click)="service.load()" [disabled]="service.loading() || service.saving()">Réessayer</button>
+  </div>
 }
 @if (!service.loading()) {
   <div class="cards-container">
     @for (conf of filtered(); track conf.id) {
-      <div>
-        <app-conference-card [conference]="conf" (selected)="selected.set($event)" />
-        <div class="actions">
-          <a [routerLink]="['/conferences/edit', conf.id]">Modifier</a>
-          <button type="button" (click)="reserve(conf)" [disabled]="service.saving() || conf.nbPlaces === 0">Réserver une place</button>
-          <button type="button" (click)="remove(conf.id)" [disabled]="service.saving()">Supprimer</button>
-        </div>
-      </div>
+      <app-conference-card [conference]="conf" [busy]="service.saving()"
+        (selected)="selected.set($event)" (removed)="remove($event)" (reserved)="reserve($event)" />
     } @empty { @if (!service.error()) { <p>Aucune conférence.</p> } }
   </div>
 }

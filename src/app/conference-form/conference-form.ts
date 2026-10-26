@@ -7,7 +7,7 @@ import { Conferance } from '../services/conferance';
 export function nonBlank(control: AbstractControl): ValidationErrors | null {
   return typeof control.value === 'string' && !control.value.trim() ? { blank: true } : null;
 }
-@Component({ selector: 'app-conference-form', imports: [ReactiveFormsModule, RouterLink], templateUrl: './conference-form.html' })
+@Component({ selector: 'app-conference-form', imports: [ReactiveFormsModule, RouterLink], templateUrl: './conference-form.html', styleUrl: './conference-form.css' })
 export class ConferenceForm {
   private readonly fb = inject(FormBuilder);
   readonly service = inject(Conferance);

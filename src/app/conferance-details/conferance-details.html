@@ -1,9 +1,13 @@
 @if (conference(); as conf) {
-  <article class="card">
-    <h1>{{ conf.name }}</h1><p>{{ conf.description }}</p>
-    <p>{{ conf.date | date:'longDate' }} · {{ conf.place }}</p>
-    <p>{{ conf.price | currency:'TND':'code' }} · {{ conf.nbPlaces }} places</p>
-  <a [routerLink]="['/conferences/edit', conf.id]">Modifier</a>
-  </article>
-} @else { <h1>Conférence introuvable</h1> }
-<a routerLink="/list">Retour aux conférences</a>
+  <div class="card">
+    <div class="card-header"><span class="badge">CONFERENCE</span><h1>{{ conf.name }}</h1></div>
+    <div class="card-body">
+      <div class="info"><span class="icon">📅</span><div><span class="label">Date</span><p>{{ conf.date | date:'yyyy-MM-dd' }}</p></div></div>
+      <div class="info"><span class="icon">📍</span><div><span class="label">Place</span><p>{{ conf.place }}</p></div></div>
+      <p>{{ conf.description }}</p>
+      <p>{{ conf.price | currency:'TND':'code' }} · {{ conf.nbPlaces }} places</p>
+      <a routerLink="/list" class="back-link">← Back to conferences</a>
+      <a [routerLink]="['/conferences/edit', conf.id]" class="back-link">Modifier</a>
+    </div>
+  </div>
+} @else { <h1>Conférence introuvable</h1><a routerLink="/list">← Back to conferences</a> }

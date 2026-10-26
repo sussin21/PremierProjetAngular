@@ -14,8 +14,8 @@ describe('Conference routing', () => {
   } }] });
   const harness = await RouterTestingHarness.create();
   await harness.navigateByUrl('/list?search=Angular');
-  expect(harness.routeNativeElement?.textContent).toContain('ANGULAR CONFERENCE');
-  expect(harness.routeNativeElement?.textContent).not.toContain('JAVA CONFERENCE');
+  expect(harness.routeNativeElement?.textContent).toContain('Angular Conference');
+  expect(harness.routeNativeElement?.textContent).not.toContain('Java Conference');
   await harness.navigateByUrl('/details/1'); expect(harness.routeNativeElement?.textContent).toContain('Angular Conference');
   await harness.navigateByUrl('/conferences/edit/1');
   expect(harness.routeNativeElement?.querySelector<HTMLInputElement>('input')?.value).toBe(conf.name);

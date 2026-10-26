@@ -30,9 +30,9 @@ describe('ConferanceList', () => {
   expect(deleteButton).toBeTruthy(); deleteButton!.click();
   const request = http.expectOne('http://localhost:3000/conferences/1');
   expect(request.request.method).toBe('DELETE');
-  expect(element.textContent).toContain('ANGULAR CONFERENCE');
+  expect(element.textContent).toContain('Angular Conference');
   request.flush(null); await fixture.whenStable();
-  expect(element.textContent).not.toContain('ANGULAR CONFERENCE');
+  expect(element.textContent).not.toContain('Angular Conference');
   expect(element.textContent).toContain('Aucune conférence'); http.verify();
  });
 });

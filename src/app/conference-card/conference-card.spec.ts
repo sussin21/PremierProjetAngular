@@ -8,7 +8,7 @@ describe('ConferenceCard', () => {
   const conf = { id: 1, name: 'Angular', description: 'Signals', date: '2026-11-05', place: 'Tunis', price: 20, nbPlaces: 0 };
   fixture.componentRef.setInput('conference', conf);
   const selected = vi.fn(); fixture.componentInstance.selected.subscribe(selected);
-  await fixture.whenStable(); fixture.nativeElement.querySelector('button').click();
+  await fixture.whenStable(); Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>).find(button => button.textContent?.trim() === 'Sélectionner')!.click();
   expect(selected).toHaveBeenCalledWith(conf);
   expect(fixture.nativeElement.textContent).toContain('Complet');
  });
