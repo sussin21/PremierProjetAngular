@@ -24,3 +24,6 @@
 @for( item of students2;track $index){
     <p> {{item.name}} - {{item.age}} </p>
 } 
+
+<p>Double (computed) : {{ doubleCount() }} · Dernière valeur observée (effect) : {{ lastCount() }}</p>
+<button type="button" (click)="reset()">Réinitialiser (set)</button>

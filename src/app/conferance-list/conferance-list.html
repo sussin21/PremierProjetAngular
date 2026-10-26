@@ -1,22 +1,7 @@
-<h1>Conferences</h1>
-
+<h1>Conférences ({{ total() }})</h1>
+@if (selected(); as conf) { <p role="status">Sélection : {{ conf.name }}</p> }
 <div class="cards-container">
-  @for (conf of conferances; track $index) {
-    <div class="card">
-
-      <img
-        src="https://images.unsplash.com/photo-1540575467063-178a50c2df87"
-        alt="Conference"
-      />
-
-      <div class="card-content">
-        <h2>{{ conf.name }}</h2>
-
-        <p>📅 {{ conf.date }}</p>
-        <p>📍 {{ conf.place }}</p>
-
-      </div>
-      <button [routerLink]="['/details', conf.id]">Details</button>
-    </div>
-  }
+  @for (conf of conferances(); track conf.id) {
+    <app-conference-card [conference]="conf" (selected)="selected.set($event)" />
+  } @empty { <p>Aucune conférence.</p> }
 </div>
