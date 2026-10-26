@@ -15,4 +15,24 @@ describe('ConferanceList', () => {
   http.expectOne('http://localhost:3000/conferences').flush([]);
   await fixture.whenStable(); expect(fixture.nativeElement.textContent).toContain('Aucune conférence'); http.verify();
  });
+ it('connects Modifier to the edit route and Supprimer to the DELETE request', async () => {
+  TestBed.configureTestingModule({ imports: [ConferanceList], providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+  const fixture = TestBed.createComponent(ConferanceList); fixture.detectChanges();
+  const http = TestBed.inject(HttpTestingController);
+  http.expectOne('http://localhost:3000/conferences').flush([
+   { id: 1, name: 'Angular Conference', description: 'Angular Signals', date: '2026-11-05', place: 'Tunis', price: 20, nbPlaces: 5 },
+  ]);
+  await fixture.whenStable();
+  const element = fixture.nativeElement as HTMLElement;
+  const editLink = Array.from(element.querySelectorAll('a')).find(a => a.textContent?.trim() === 'Modifier');
+  expect(editLink?.getAttribute('href')).toBe('/conferences/edit/1');
+  const deleteButton = Array.from(element.querySelectorAll('button')).find(button => button.textContent?.trim() === 'Supprimer');
+  expect(deleteButton).toBeTruthy(); deleteButton!.click();
+  const request = http.expectOne('http://localhost:3000/conferences/1');
+  expect(request.request.method).toBe('DELETE');
+  expect(element.textContent).toContain('ANGULAR CONFERENCE');
+  request.flush(null); await fixture.whenStable();
+  expect(element.textContent).not.toContain('ANGULAR CONFERENCE');
+  expect(element.textContent).toContain('Aucune conférence'); http.verify();
+ });
 });
