@@ -1,59 +1,39 @@
-# PremierProjetAngular
+# angluarwork
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.24.
+Application Angular 21 de gestion de conférences, complétée chapitre par chapitre à partir du projet fourni. Consulter [CHAPTERS.md](CHAPTERS.md) pour retrouver les notions et leurs commits.
 
-## Development server
+## Lancer
 
-To start a local development server, run:
+Node.js 22.12+ ou 24 et npm sont nécessaires.
 
-```bash
-ng serve
+```sh
+npm ci
+npm run api
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Dans un deuxième terminal :
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```sh
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Ouvrir http://localhost:4200. L’API tourne sur http://localhost:3000/conferences et conserve les modifications dans `db.json`. La version json-server 0.17.4 correspond au support de cours et utilise des identifiants numériques. Il s’agit d’un backend local de TP.
 
-```bash
-ng generate --help
+## Parcours
+
+- `/home` : exemples des bindings, Signals, computed et effect.
+- `/conferences/list` : cartes, recherche (`?search=Angular`), sélection enfant/parent, réservation et suppression.
+- `/conferences/new` : formulaire de création avec validation.
+- `/conferences/details/1` et `/conferences/edit/1` : détails et modification, données résolues avant activation.
+- `/list` et `/details/1` restent utilisables via redirection.
+
+Les conférences adaptent le modèle EventM du chapitre HTTP : name correspond à title et place à location ; description, date, price et nbPlaces sont conservés. L’URL configurable se trouve dans `src/environments/environment.ts`. Les appels HttpClient restent dans le service, les templates lisent des Signals. Les écritures mettent à jour l’état local après succès uniquement. Arrêter l’API permet de vérifier les messages d’erreur et la reprise via Réessayer.
+
+## Vérifier
+
+```sh
+npm run build
+npm test -- --watch=false
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Les tests HTTP emploient HttpTestingController ; aucune API réelle n’est nécessaire pour les tests unitaires. Pour le TP, vérifier aussi GET/POST/PUT/PATCH/DELETE dans l’onglet Réseau du navigateur. Le build produit plusieurs chunks pour les routes chargées à la demande.

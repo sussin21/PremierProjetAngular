@@ -25,3 +25,11 @@ Le dÃ©pÃ´t conserve le commit initial et importe ensuite le projet fourni. Chaqu
 - Required, minLength, min, pattern et validateur personnalisé nonBlank.
 - Erreurs après interaction, soumission invalide bloquée, reset/getRawValue.
 - valueChanges/statusChanges convertis avec toSignal et valeurs dérivées avec computed.
+
+## Chapitre 6 : HttpClient et Signals
+- provideHttpClient, URL dans environment, backend json-server 0.17.4 et db.json.
+- GET liste/détail et HttpParams ; POST, PUT, PATCH et DELETE typés.
+- Service à état avec Signals en lecture seule, computed, chargement, erreurs, annulation de lecture et blocage des doubles écritures.
+- Mise à jour de l’état après succès ; erreurs réseau/404/serveur visibles, réessai et formulaires conservés après échec.
+- Resolver HTTP pour détails/modification, abonnements de mutation nettoyés à la destruction.
+- Le service à état est l’approche B du cours ; toSignal est déjà utilisé pour les formulaires. httpResource est une alternative de lecture, pas une obligation à cumuler pour la même requête.

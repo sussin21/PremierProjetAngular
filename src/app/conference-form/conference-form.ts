@@ -1,7 +1,8 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
+import { Conference } from '../models/conference';
 import { Conferance } from '../services/conferance';
 export function nonBlank(control: AbstractControl): ValidationErrors | null {
   return typeof control.value === 'string' && !control.value.trim() ? { blank: true } : null;
@@ -12,6 +13,8 @@ export class ConferenceForm {
   readonly service = inject(Conferance);
   private readonly router = inject(Router);
   readonly id = input<string>();
+  readonly resolvedConference = input<Conference | null>(null);
+  private readonly destroyRef = inject(DestroyRef);
   readonly notFound = signal(false);
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3), nonBlank]],
@@ -30,18 +33,19 @@ export class ConferenceForm {
   constructor() {
     effect(() => {
       const id = this.id();
-      const conf = id ? this.service.getById(Number(id)) : undefined;
+      const conf = this.resolvedConference();
       this.notFound.set(!!id && !conf);
       if (conf) this.form.reset({ ...conf, logistics: { date: conf.date, place: conf.place } });
     });
   }
   submit() {
-    if (this.form.invalid || this.notFound()) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid || this.notFound() || this.service.saving()) { this.form.markAllAsTouched(); return; }
     const value = this.form.getRawValue();
     const draft = { name: value.name.trim(), description: value.description.trim(),
       date: value.logistics.date, place: value.logistics.place.trim(), price: value.price, nbPlaces: value.nbPlaces };
-    if (this.id()) this.service.update({ ...draft, id: Number(this.id()) });
-    else this.service.create(draft);
-    this.router.navigate(['/conferences/list']);
+    const request = this.id() ? this.service.update({ ...draft, id: Number(this.id()) }) : this.service.create(draft);
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => this.router.navigate(['/conferences/list']), error: () => {},
+    });
   }
 }

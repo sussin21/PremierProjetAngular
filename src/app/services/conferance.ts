@@ -1,27 +1,74 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Observable, Subscription, catchError, defer, finalize, tap, throwError } from 'rxjs';
 import { Conference, ConferenceDraft } from '../models/conference';
+import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class Conferance {
-  private readonly state = signal<Conference[]>([
-    { id: 1, name: 'Angular Conference', description: 'Composants et Signals', date: '2026-11-05', place: 'Tunis', price: 20, nbPlaces: 120 },
-    { id: 2, name: 'Java Conference', description: 'Services et applications', date: '2026-11-12', place: 'Sousse', price: 30, nbPlaces: 60 },
-    { id: 3, name: 'AI Conference', description: 'Découvrir les modèles', date: '2026-11-20', place: 'Sfax', price: 0, nbPlaces: 0 }
-  ]);
+  private readonly http = inject(HttpClient);
+  private readonly url = `${environment.apiUrl}/conferences`;
+  private readonly state = signal<Conference[]>([]);
+  private readonly loadingState = signal(false);
+  private readonly savingState = signal(false);
+  private readonly errorState = signal<string | null>(null);
+  private loadSubscription?: Subscription;
   readonly conferences = this.state.asReadonly();
   readonly count = computed(() => this.conferences().length);
-  getAll(): Conference[] { return this.conferences(); }
-  getById(id: number): Conference | undefined { return this.conferences().find(c => c.id === id); }
-  create(draft: ConferenceDraft): Conference {
-    const created = { ...draft, id: Math.max(0, ...this.conferences().map(c => c.id)) + 1 };
-    this.state.update(items => [...items, created]);
-    return created;
+  readonly loading = this.loadingState.asReadonly();
+  readonly saving = this.savingState.asReadonly();
+  readonly error = this.errorState.asReadonly();
+  constructor() { inject(DestroyRef).onDestroy(() => this.loadSubscription?.unsubscribe()); }
+
+  getAll(place?: string): Observable<Conference[]> {
+    const params = place ? new HttpParams().set('place', place) : new HttpParams();
+    return this.http.get<Conference[]>(this.url, { params }).pipe(catchError(error => this.failure(error)));
   }
-  update(conference: Conference): void {
-    this.state.update(items => items.map(c => c.id === conference.id ? { ...conference } : c));
+  getById(id: number): Observable<Conference> {
+    return this.http.get<Conference>(`${this.url}/${id}`).pipe(catchError(error => this.failure(error)));
   }
-  updatePlaces(id: number, nbPlaces: number): void {
-    if (!Number.isInteger(nbPlaces) || nbPlaces < 0) throw new Error('Nombre de places invalide');
-    this.state.update(items => items.map(c => c.id === id ? { ...c, nbPlaces } : c));
+  load(): void {
+    this.loadSubscription?.unsubscribe();
+    this.loadingState.set(true); this.errorState.set(null);
+    this.loadSubscription = this.getAll().pipe(finalize(() => this.loadingState.set(false))).subscribe({
+      next: data => this.state.set(data),
+      error: error => this.errorState.set(error.message),
+    });
   }
-  remove(id: number): void { this.state.update(items => items.filter(c => c.id !== id)); }
+  create(draft: ConferenceDraft): Observable<Conference> {
+    return this.mutate(() => this.http.post<Conference>(this.url, draft),
+      created => this.state.update(items => [...items, created]));
+  }
+  update(conference: Conference): Observable<Conference> {
+    return this.mutate(() => this.http.put<Conference>(`${this.url}/${conference.id}`, conference),
+      updated => this.replace(updated));
+  }
+  updatePlaces(id: number, nbPlaces: number): Observable<Conference> {
+    if (!Number.isInteger(nbPlaces) || nbPlaces < 0) return throwError(() => new Error('Nombre de places invalide'));
+    return this.mutate(() => this.http.patch<Conference>(`${this.url}/${id}`, { nbPlaces }), updated => this.replace(updated));
+  }
+  remove(id: number): Observable<void> {
+    return this.mutate(() => this.http.delete<void>(`${this.url}/${id}`),
+      () => this.state.update(items => items.filter(c => c.id !== id)));
+  }
+  private replace(updated: Conference): void {
+    this.state.update(items => items.map(c => c.id === updated.id ? updated : c));
+  }
+  private mutate<T>(request: () => Observable<T>, success: (value: T) => void): Observable<T> {
+    return defer(() => {
+      if (this.saving()) return throwError(() => new Error('Une modification est déjà en cours.'));
+      this.savingState.set(true); this.errorState.set(null);
+      return request().pipe(tap(success), catchError(error => {
+        const message = this.message(error); this.errorState.set(message);
+        return throwError(() => new Error(message));
+      }), finalize(() => this.savingState.set(false)));
+    });
+  }
+  private failure(error: HttpErrorResponse): Observable<never> {
+    return throwError(() => new Error(this.message(error)));
+  }
+  private message(error: HttpErrorResponse): string {
+    return error.status === 0 ? 'Serveur injoignable. Lancez npm run api.'
+      : error.status === 404 ? 'Conférence introuvable.'
+      : `Erreur serveur (${error.status}). Réessayez.`;
+  }
 }

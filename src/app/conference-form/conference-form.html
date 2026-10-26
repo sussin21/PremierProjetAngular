@@ -1,4 +1,5 @@
 <h1>{{ id() ? 'Modifier la conférence' : 'Ajouter une conférence' }}</h1>
+@if (service.error(); as error) { <p role="alert">{{ error }}</p> }
 @if (notFound()) {
   <p role="alert">Conférence introuvable.</p>
 } @else {
@@ -20,7 +21,7 @@
     <label>Places <input type="number" min="0" step="1" formControlName="nbPlaces" /></label>
     @if (form.controls.nbPlaces.touched && form.controls.nbPlaces.invalid) { <p class="error">Entrez un nombre entier positif ou nul.</p> }
     <div class="actions">
-      <button type="submit" [disabled]="!isValid()">Enregistrer</button>
+      <button type="submit" [disabled]="!isValid() || service.saving()">{{ service.saving() ? 'Enregistrement�' : 'Enregistrer' }}</button>
       <button type="button" (click)="form.reset()">Réinitialiser</button>
     </div>
   </form>
